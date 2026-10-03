@@ -10,6 +10,13 @@
   const arFailed = document.getElementById('ar-failed');
   const arInstructions = document.getElementById('ar-instructions');
 
+  const animControls = document.getElementById('animation-controls');
+  const animSelect = document.getElementById('animation-select');
+  const animToggle = document.getElementById('animation-toggle');
+
+  // Must match the animation-name attribute in index.html and exist in the GLB.
+  const DEFAULT_ANIMATION = 'Cafe_Reaction';
+
   document.getElementById('reload').addEventListener('click', () => location.reload());
 
   // --- Loading state -------------------------------------------------------
@@ -20,6 +27,7 @@
 
   viewer.addEventListener('load', () => {
     loading.hidden = true;
+    setupAnimationControls();
     detectArSupport();
   });
 
@@ -38,6 +46,50 @@
       loadError.hidden = false;
     }
   }, 15000);
+
+  // --- Animations ----------------------------------------------------------
+  // The list comes from the loaded GLB (viewer.availableAnimations), never hardcoded.
+  function setupAnimationControls() {
+    const names = viewer.availableAnimations || [];
+    if (names.length === 0) return; // static model: keep the controls hidden
+
+    animSelect.replaceChildren(
+      ...names.map((name) => {
+        const option = document.createElement('option');
+        option.value = name;
+        option.textContent = name.replace(/_/g, ' ');
+        return option;
+      })
+    );
+
+    if (names.includes(DEFAULT_ANIMATION)) {
+      viewer.animationName = DEFAULT_ANIMATION;
+    } else {
+      console.warn(`Koyuki: default animation "${DEFAULT_ANIMATION}" not found in GLB.`);
+    }
+    animSelect.value = viewer.animationName || names[0];
+    viewer.play();
+    updateToggle();
+    animControls.hidden = false;
+  }
+
+  animSelect.addEventListener('change', () => {
+    viewer.animationName = animSelect.value;
+    viewer.currentTime = 0;
+    viewer.play();
+    updateToggle();
+  });
+
+  animToggle.addEventListener('click', () => {
+    if (viewer.paused) viewer.play();
+    else viewer.pause();
+    updateToggle();
+  });
+
+  function updateToggle() {
+    animToggle.textContent = viewer.paused ? 'Play' : 'Pause';
+    animToggle.setAttribute('aria-pressed', String(viewer.paused));
+  }
 
   // --- AR availability -----------------------------------------------------
   // canActivateAR is resolved asynchronously by <model-viewer>, so poll briefly.

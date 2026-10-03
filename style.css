@@ -107,6 +107,30 @@ model-viewer {
 @keyframes spin { to { transform: rotate(360deg); } }
 @media (prefers-reduced-motion: reduce) { .spinner { animation-duration: 3s; } }
 
+/* Animation controls */
+.controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 16px;
+  background: var(--panel);
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+}
+.controls[hidden] { display: none; }
+.controls label { font-weight: 600; }
+.controls select {
+  flex: 1 1 auto;
+  min-width: 0;
+  min-height: 48px;
+  padding: 0 12px;
+  border: 2px solid var(--text);
+  border-radius: 12px;
+  background: var(--bg);
+  color: var(--text);
+  font: inherit;
+}
+.controls select:focus-visible { outline: 3px solid var(--warn); outline-offset: 2px; }
+
 /* Info panel */
 .info { padding: 12px 16px 20px; background: var(--panel); }
 .info h2 { margin: 0 0 6px; font-size: 1rem; }

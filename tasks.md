@@ -14,17 +14,17 @@ _Last updated: 2026-10-03 by the first agent session._
 | 2. Obtain/validate `Koyuki.glb` | DONE |
 | 3. 3D preview (`<model-viewer>`) | DONE (desktop headless Chrome verified) |
 | 4. AR entry point | CODE DONE, **not tested on a real device** |
-| 5. GitHub Pages + HTTPS | **BLOCKED — needs the user** (see below) |
+| 5. GitHub Pages + HTTPS | **Needs the user**: commit/push + confirm Pages enabled (see below) |
 | 6. Local development | DONE |
 | 7. Mobile UI | DONE in code (layout checked at 500px headless width only) |
 | 8. First real-device Android test | **NOT DONE — needs user + deployed HTTPS URL** |
-| 9-14. Scale, shadows, animation, interaction, perf | NOT STARTED (shadow attribute already set, untested in AR) |
+| 9-14. Scale, shadows, animation, interaction, perf | Animation + picker DONE on desktop (default `Cafe_Reaction`, see below). Scale, shadows (attribute set), perf NOT STARTED |
 | 13. Error handling | Mostly implemented in `app.js` (load error, AR unavailable, AR failed/camera). Untested on real device |
 | 15-17. A11y, hygiene, final test | Partially (alt text, labels done); final deployment test NOT DONE |
 
 ## Next steps for the next agent
 
-1. **Deployment (Phase 5) is the blocker.** `E:\Koyuki-AR` is NOT a git repository and has no remote, and it contained only `tasks.md` at the start. The user said to use their *existing* GitHub Pages project, but no such repo is present on disk. Ask the user for: the repo URL (or clone it) and whether Pages publishes from a branch/folder or from Actions. Then copy/integrate `index.html`, `style.css`, `app.js`, `models/Koyuki.glb` into it **without touching their existing files** (if the repo already has an `index.html`, put this feature under a subfolder such as `ar/`; all asset paths in the files are relative, so moving the whole set into a folder works unchanged). `tools/` is optional dev tooling and need not be deployed.
+1. **Deployment (Phase 5).** UPDATE: the user has since made `E:\Koyuki-AR` a git repo (branch `main`, remote `origin` = https://github.com/S0HElL/Koyuki-AR.git, one commit "init"). This repo IS the project, so files stay at the repo root. Still unknown: whether GitHub Pages is enabled and from where (branch/folder vs Actions). Expected URL if Pages serves `main` from `/`: https://s0hell.github.io/Koyuki-AR/ (inferred, unverified). Ask the user to confirm the Pages settings (Settings > Pages); don't create a workflow unless needed (Task 16.3). Agents have not committed or pushed anything; the user does that.
 2. After deployment: verify no 404s on the Pages URL (HTML, CSS, JS, GLB), then ask the user to test on a real Android phone over HTTPS (Phase 8). Record results using the template in Task 8.2.
 3. Only after AR placement works: Phase 9 (scale/orientation), Phase 10 (shadows), Phase 11-12 (animation) — see notes below.
 
@@ -108,7 +108,33 @@ Known limitations / observations:
 Next phase: 5 (blocked on user) then 8.
 ```
 
-## Notes for Phase 9 / 11 (not yet implemented, deliberately)
+### Animations added (user-requested, done ahead of the plan's order)
+
+```text
+Phase: 11/12 (early, at the user's explicit request; the T-pose + floating weapon looked broken)
+Files changed: index.html, style.css, app.js
+What was implemented:
+  - <model-viewer autoplay animation-name="Cafe_Reaction"> -> default animation (verified to exist in the GLB; 6.03 s, loops).
+  - Animation picker (<select>, built at runtime from viewer.availableAnimations, so no hardcoded list)
+    + Pause/Play button. Shown only if the GLB has animations. DEFAULT_ANIMATION constant in app.js must
+    match the animation-name attribute in index.html.
+  - Explicit camera: camera-target="0m 0.45m 0m" camera-orbit="0deg 80deg 2.4m". model-viewer's automatic framing
+    is computed from the bind-pose bbox, which includes the floating weapon, so the character appeared off-centre
+    to the right. Bbox center reported at runtime: x=-0.549, y=0.555, z=-0.109; the character itself is centred
+    around x=0. These camera values affect only the 3D preview, not AR.
+Tests performed (desktop headless Chrome via DevTools Protocol):
+  - Default = Cafe_Reaction, playing (currentTime advancing, paused=false), 24 options, select value matches.
+  - Changing the select to Cafe_Idle switches animation (duration 8 s) and restarts it; Pause/Play toggles state.
+  - Screenshots: character poses correctly, weapon in hands, centred and well-sized. No console errors, no 404s.
+NOT tested / risks (verify on a real phone, Phase 8):
+  - Whether animations play inside AR. WebXR mode renders in the page so it should; Scene Viewer (Android) and
+    Quick Look (iOS) are separate native viewers and may show a static pose or ignore animation-name.
+  - Root motion: not checked whether any animation (e.g. Cafe_Walk, Move_Ing) translates the model away from
+    its origin; if so it may drift from the AR anchor. Cafe_Reaction/Cafe_Idle appeared to stay in place.
+  - Only Cafe_Reaction and Cafe_Idle were visually reviewed, not the other 22.
+```
+
+## Notes for Phase 9 / 11 (original notes; animation part now partly superseded by the section above)
 
 - Phase 11 inspection is already done (names above). In a headless test, `autoplay animation-name="Normal_Idle"`
   played correctly and put the weapon in the character's hands, which looks far better than the bind pose.

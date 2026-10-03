@@ -29,6 +29,10 @@
         ar
         ar-modes="webxr scene-viewer quick-look"
         ar-placement="floor"
+        camera-target="0m 0.45m 0m"
+        camera-orbit="0deg 80deg 2.4m"
+        autoplay
+        animation-name="Cafe_Reaction"
         reveal="auto"
         loading="eager">
 
@@ -47,6 +51,12 @@
         <p>Koyuki could not be loaded.<br>Please check your connection and reload the page.</p>
         <button id="reload" class="btn" type="button">Reload</button>
       </div>
+    </section>
+
+    <section class="controls" id="animation-controls" aria-label="Animation controls" hidden>
+      <label for="animation-select">Animation</label>
+      <select id="animation-select"></select>
+      <button id="animation-toggle" class="btn" type="button" aria-pressed="false">Pause</button>
     </section>
 
     <section class="info" aria-label="Status and instructions">
