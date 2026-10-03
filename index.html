@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#0b1020">
+  <title>Koyuki in AR</title>
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="style.css">
+  <!-- Pinned official <model-viewer> build (Google-hosted CDN). -->
+  <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/4.0.0/model-viewer.min.js"></script>
+</head>
+<body>
+  <main class="app">
+    <header class="app__header">
+      <h1>Koyuki</h1>
+      <p class="app__subtitle">Drag to rotate, pinch or scroll to zoom.</p>
+    </header>
+
+    <section class="stage" aria-label="Koyuki 3D viewer">
+      <!-- All paths are relative so the page works under https://OWNER.github.io/REPOSITORY/ -->
+      <model-viewer
+        id="koyuki"
+        src="models/Koyuki.glb"
+        alt="3D model of Koyuki, a Blue Archive character"
+        camera-controls
+        touch-action="pan-y"
+        shadow-intensity="1"
+        ar
+        ar-modes="webxr scene-viewer quick-look"
+        ar-placement="floor"
+        reveal="auto"
+        loading="eager">
+
+        <button slot="ar-button" id="ar-button" class="btn btn--primary" type="button">
+          View Koyuki in AR
+        </button>
+      </model-viewer>
+
+      <div id="loading" class="overlay" role="status" aria-live="polite">
+        <div class="spinner" aria-hidden="true"></div>
+        <p>Loading Koyuki&hellip;</p>
+        <progress id="loading-bar" max="1" value="0" aria-label="Model download progress"></progress>
+      </div>
+
+      <div id="load-error" class="overlay overlay--error" role="alert" hidden>
+        <p>Koyuki could not be loaded.<br>Please check your connection and reload the page.</p>
+        <button id="reload" class="btn" type="button">Reload</button>
+      </div>
+    </section>
+
+    <section class="info" aria-label="Status and instructions">
+      <p id="ar-unavailable" class="notice" role="status" hidden>
+        AR is not available on this device/browser.<br>
+        You can still view Koyuki in 3D.
+      </p>
+
+      <p id="ar-failed" class="notice notice--warn" role="alert" hidden>
+        AR could not start. AR needs camera permission &mdash; if you declined it,
+        allow the camera for this site in your browser settings, then tap the button again.
+      </p>
+
+      <div id="ar-instructions">
+        <h2>How to use AR</h2>
+        <ol>
+          <li>Tap &ldquo;View Koyuki in AR&rdquo;.</li>
+          <li>Move your phone slowly to scan the floor.</li>
+          <li>Tap a detected surface to place Koyuki.</li>
+          <li>Move around her to view her from different angles.</li>
+        </ol>
+      </div>
+    </section>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>
